@@ -19,9 +19,9 @@ etsy_sellers = db.etsy_sellers
 
 url = "http://www.etsy.com/search/shops?order=alphabetical&page={0}"
 
-i = 1
+i = 1250
 
-while i <= 1250:
+while i <= 99999:
 	print "Trying page {0}".format(i)
 	req_url = url.format(i)
 	request = urllib2.Request(req_url)

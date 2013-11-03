@@ -7,22 +7,23 @@ app.config['MONGO_DBNAME'] = 'bizdev'
 
 mongo = PyMongo(app)
 
-def renderTemplate(contents=None,title=""):
-	categories = uniqueAmazonCategories()
-        return render_template("index.html",title=title,content=contents,categories=categories);
+def renderTemplate(contents=None,title="",referrer=None):
+	return render_template("index.html",title=title,content=contents,referrer=referrer)
 
+def renderAmazonCategories():
+	categories = uniqueAmazonCategories()
+	return render_template("amazon.html",categories=categories)
 
 @app.route("/")
 def index():
-	return renderTemplate(contents="<h3>Select a Category to view sellers.</h3>",title="Home")
+	return renderTemplate(contents="<h3>Select a Site to view its sellers.</h3>",title="Home")
 
-@app.route("/categories/amazon.json")
-def amazonCategories():
-	try:
-		out = uniqueAmazonCategories()
-		return jsonify({"categories":out})
-	except Exception:
-		return "Error Querying DB"
+@app.route("/amazon")
+def amazon():
+	contents="<h3>Select a Category to view sellers.</h3>"
+	categories = renderAmazonCategories()
+	contents = contents + categories
+	return renderTemplate(contents=contents,title="Amazon",referrer="amazon")
 
 @app.route("/amazon/sellers/<int:category>")
 def amazonSellers(category):
@@ -37,8 +38,15 @@ def amazonSellers(category):
 			title = cat["category_name"]
 		
 		out.append({"name":cat["seller_name"],"number_of_products":cat["number_or_products"],"seller_id":cat["seller_id"]})
+
+	categories = renderAmazonCategories()
 	template = render_template("seller_table.html",sellers=out,title=title)	
-	return renderTemplate(contents=template, title=title)
+	contents = categories + template
+	return renderTemplate(contents=contents, title=title,referrer="amazon")
+
+@app.route("/etsy")
+def etsy():
+	return "Hi"
 
 def uniqueAmazonCategories():
 	blacklist = ["Appstore for Android"," Kindle Fire Tablets"," Kindle E-readers","MP3s & Cloud Player","Books & Audible","Unlimited Instant Videos"]
