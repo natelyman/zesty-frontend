@@ -1,0 +1,30 @@
+{% if title %}
+<h2>{{title}}</h2>
+{% endif %}
+{% if sellers %}
+<table class="table">
+	<tr>
+		<th>Seller Name</th>
+		<th>Owner Name</th>
+		<th>Product Count</th>
+		<th>Seller Info</th>
+	</tr>
+	{% for seller in sellers %}
+	<tr>
+		<td>{{seller.name}}</td>
+		<td><a href="{{seller.url}}" target="_blank">{{seller.owner}}</td>
+		<td>{{seller.number_of_products}}</td>
+		<td><a href="http://www.etsy.com/shop/{{seller.name}}" target="_blank">{{seller.name}}</a></td>
+	</tr>
+	{% endfor %}
+</table>
+{% endif %}
+
+<ul class="pager">
+{% if current_page > 0 %}
+  <li class="previous"><a href="/etsy/page/{{current_page-1}}">&larr; Older</a></li>
+ {% endif %}
+ {% if has_more == True %}
+  <li class="next"><a href="/etsy/page/{{current_page+1}}">Newer &rarr;</a></li>
+ {% endif %}
+</ul>

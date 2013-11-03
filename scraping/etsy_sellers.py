@@ -19,7 +19,7 @@ etsy_sellers = db.etsy_sellers
 
 url = "http://www.etsy.com/search/shops?order=alphabetical&page={0}"
 
-i = 1250
+i = 1
 
 while i <= 99999:
 	print "Trying page {0}".format(i)
@@ -45,7 +45,7 @@ while i <= 99999:
 		owner = owner.text
 
 		count = shop.find(attrs={"class":"count-number"});
-		count = count.text.strip()
+		count = int(count.text.strip())
 
 		insert = {"url":owner_url,"owner":owner,"seller_name":name,"number_of_products":count}
 		etsy_sellers.insert(insert)

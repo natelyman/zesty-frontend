@@ -46,7 +46,24 @@ def amazonSellers(category):
 
 @app.route("/etsy")
 def etsy():
-	return "Hi"
+	return etsyPage(0)
+
+@app.route("/etsy/page/<int:page>")
+def etsyPage(page=0):
+	skip = page*20
+	sellers = mongo.db.etsy_sellers.find(skip=skip).sort("number_of_products",-1).limit(20)
+
+	out = []
+	for seller in sellers:
+		name = seller["seller_name"]
+		owner = seller["owner"]
+		products = seller["number_of_products"]
+		link = seller["url"]
+		out.append({"name":name,"number_of_products":products,"url":link,"owner":owner})
+
+	has_more = len(out) == 20
+	contents = render_template("etsy.html",title="Etsy Sellers",sellers=out,current_page=page,has_more=has_more)
+	return renderTemplate(contents=contents,title="Etsy",referrer="etsy")
 
 def uniqueAmazonCategories():
 	blacklist = ["Appstore for Android"," Kindle Fire Tablets"," Kindle E-readers","MP3s & Cloud Player","Books & Audible","Unlimited Instant Videos"]
