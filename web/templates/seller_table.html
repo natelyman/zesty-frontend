@@ -1,0 +1,19 @@
+{% if title %}
+<h2>{{title}}</h2>
+{% endif %}
+{% if sellers %}
+<table class="table">
+	<tr>
+		<th>Seller Name</th>
+		<th>Product Count</th>
+		<th>Seller Info</th>
+	</tr>
+	{% for seller in sellers %}
+	<tr>
+		<td>{{seller.name}}</td>
+		<td>{{seller.number_of_products}}</td>
+		<td><a href="http://www.amazon.com/gp/aag/details/ref=aag_m_ss?ie=UTF8&asin=&isAmazonFulfilled=&isCBA=&marketplaceID=ATVPDKIKX0DER&seller={{seller.seller_id}}#aag_detailsAbout" target="_blank">{{seller.name}}</a></td>
+	</tr>
+	{% endfor %}
+</table>
+{% endif %}
