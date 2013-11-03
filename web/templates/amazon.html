@@ -1,0 +1,22 @@
+
+			{% if categories %}
+			<ul class="nav nav-pills">
+ 			 {% for category in categories %}
+			 <li class="dropdown">
+   			    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+      				{{category.parent}} <span class="caret"></span>
+    		            </a>
+			    {% if category.subcategories %}
+			    <ul class="dropdown-menu" role="menu">
+            		      {% for subcat in category.subcategories %}
+			      <li><a href="/amazon/sellers/{{subcat.id}}">{{subcat.name}}</a></li>
+			      {% endfor %}
+          		    </ul>
+			    {% endif %}
+  			 </li>
+  			{% endfor %}
+			</ul>
+			{% endif %}
+			{% if content %}
+			{{content|safe}}
+			{% endif %}
