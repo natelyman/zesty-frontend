@@ -20,9 +20,8 @@ def index():
 
 @app.route("/amazon")
 def amazon():
-	contents="<h3>Select a Category to view sellers.</h3>"
 	categories = renderAmazonCategories()
-	contents = contents + categories
+	contents = categories
 	return renderTemplate(contents=contents,title="Amazon",referrer="amazon")
 
 @app.route("/amazon/sellers/<int:category>")
@@ -43,6 +42,39 @@ def amazonSellers(category):
 	template = render_template("seller_table.html",sellers=out,title=title)	
 	contents = categories + template
 	return renderTemplate(contents=contents, title=title,referrer="amazon")
+
+@app.route("/amazon/download/sellers")
+def amazonDownload():
+	sellers = mongo.db.amazon_sellers.find()
+	group = {}
+
+	for seller in sellers:
+		seller_id = seller["seller_id"]
+		if seller_id not in group.keys():
+			temp = {"seller_id":seller_id,"number_of_products":0,"seller_name":seller["seller_name"],"categories":[],"url":"http://www.amazon.com/gp/aag/details/ref=aag_m_ss?ie=UTF8&asin=&isAmazonFulfilled=&isCBA=&marketplaceID=ATVPDKIKX0DER&seller={0}#aag_detailsAbout".format(seller_id)}
+			group[seller_id] = temp
+
+		group[seller_id]["categories"].append(seller["category_name"])
+		group[seller_id]["number_of_products"] += seller["number_or_products"]
+
+	out = []
+	for key, value in group.iteritems():
+		out.append(value)
+
+	out = sorted(out,key=lambda seller:seller["number_of_products"],reverse=True)
+
+	contents = []
+	contents.append("STORE\tNUMBER_OF_PRODUCTS\tSTORE_URL\tCATEGORIES")
+	for o in out:
+		name = o["seller_name"].encode('utf-8')
+		products = o["number_of_products"]
+		link = o["url"]
+		categories = ", ".join(o["categories"]).encode('utf-8')
+		contents.append("{0}\t{1}\t{2}\t{3}".format(name,products,link,categories))
+
+	amzn_content = "\n".join(contents)
+	return Response(amzn_content, mimetype="text/plain", headers={"Content-Disposition":"attachment;filename=amazon.tsv"})
+
 
 @app.route("/etsy")
 def etsy():
