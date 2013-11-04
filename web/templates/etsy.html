@@ -4,6 +4,14 @@
 <h2>{{title}}</h2>
 {% endif %}
 </div>
+<ul class="pager">
+{% if current_page > 0 %}
+  <li class="previous"><a href="/etsy/page/{{current_page-1}}">&larr; Older</a></li>
+ {% endif %}
+ {% if has_more == True %}
+  <li class="next"><a href="/etsy/page/{{current_page+1}}">Newer &rarr;</a></li>
+ {% endif %}
+</ul>
 {% if sellers %}
 <table class="table">
 	<tr>
