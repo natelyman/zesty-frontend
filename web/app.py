@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, abort,render_template
+from flask import Flask, jsonify, abort,render_template, Response
 from flask.ext.pymongo import PyMongo
 
 
@@ -64,6 +64,22 @@ def etsyPage(page=0):
 	has_more = len(out) == 20
 	contents = render_template("etsy.html",title="Etsy Sellers",sellers=out,current_page=page,has_more=has_more)
 	return renderTemplate(contents=contents,title="Etsy",referrer="etsy")
+
+@app.route("/etsy/download/sellers")
+def etsyDownloadSellers():
+	sellers = mongo.db.etsy_sellers.find().sort("number_of_products",-1)
+	out = []
+	out.append("STORE\tOWNER\tNUMBER_OF_PRODUCTS\tSTORE_URL\tOWNER_URL")
+	for seller in sellers:
+		name = seller["seller_name"].encode('utf-8')
+		owner = seller["owner"].encode('utf-8')
+		products = seller["number_of_products"]
+		link = seller["url"]
+		out.append("{0}\t{1}\t{2}\thttp://www.etsy.com/shop/{3}\t{4}".format(name,owner,products,name,link))
+
+	etsy_content = "\n".join(out)
+	return Response(etsy_content, mimetype="text/plain", headers={"Content-Disposition":"attachment;filename=etsy.tsv"})
+
 
 def uniqueAmazonCategories():
 	blacklist = ["Appstore for Android"," Kindle Fire Tablets"," Kindle E-readers","MP3s & Cloud Player","Books & Audible","Unlimited Instant Videos"]
